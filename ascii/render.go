@@ -6,110 +6,96 @@ import (
 	"strings"
 )
 
+// 	Reand banner files
+// 	func Render(text string, banner string) {
+// 	bannerLines := readBanner(banner)
+
+// 	// convert banner file to map
+// 	asciiMap := buildAsciiMap(bannerLines)
+
+// 	// print ascii art
+// 	printAscii(text, asciiMap)
+
 func ReadBanner(file string) ([]string, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
+
 	lines := strings.Split(string(data), "\n")
 	return lines, nil
 }
 
 func BuildAsciiMap(lines []string) map[rune][]string {
 	asciiMap := make(map[rune][]string)
+
 	char := 32
+
 	for i := 1; i < len(lines); i += 9 {
 		asciiMap[rune(char)] = lines[i : i+8]
 		char++
 	}
+
 	return asciiMap
 }
 
-func PrintAscii(text string, asciiMap map[rune][]string) {
-	lines := strings.Split(text, "\\n")
-	for i, line := range lines {
-		if line == "" {
-			if i != 0 {
-				fmt.Println()
-			}
-			continue
-		}
-		for row := 0; row < 8; row++ {
-			for _, char := range line {
-				fmt.Print(asciiMap[char][row])
-			}
-			fmt.Println()
-		}
-	}
-}
-
-// Colors maps color names to ANSI escape codes
-var Colors = map[string]string{
-	"black":   "\033[30m",
+var colors = map[string]string{
+	"black":   "\033[30m]",
 	"red":     "\033[31m",
 	"green":   "\033[32m",
 	"yellow":  "\033[33m",
 	"blue":    "\033[34m",
-	"magenta": "\033[35m",
+	"magenta": "\033[35]",
+	"purple":  "\033[35m",
 	"cyan":    "\033[36m",
 	"white":   "\033[37m",
 	"orange":  "\033[38;5;214m",
 	"reset":   "\033[0m",
 }
 
-// PrintAsciiColor prints ASCII art with color applied to all occurrences
-// of substr in the text. If substr is empty, the whole output is colored.
-func PrintAsciiColor(text, color, substr string, asciiMap map[rune][]string) {
-	colorCode := Colors[color]
-	reset := Colors["reset"]
+func PrintAscii(text string, asciiMap map[rune][]string) string {
+
+	var result strings.Builder
 
 	lines := strings.Split(text, "\\n")
-	for _, line := range lines {
+
+	subStr := "kit"
+
+	color := colors["red"]
+	reset := colors["reset"]
+
+	for i, line := range lines {
+
+		subIndex := strings.Index(line, subStr)
+		// fmt.Println("subIndex:", subIndex, line, len(line), len(subStr), 8 == subIndex+len(subStr))
+
 		if line == "" {
-			fmt.Println()
+			if i != 0 {
+				result.WriteString("\n")
+			}
 			continue
 		}
 
-		// Build a set of rune positions that should be colored.
-		// We convert the line to a rune slice so positions match
-		// how range iterates over characters.
-		runes := []rune(line)
-		subRunes := []rune(substr)
-		colored := make([]bool, len(runes))
-
-		if substr == "" {
-			// Color everything
-			for i := range colored {
-				colored[i] = true
-			}
-		} else {
-			// Mark every position that falls inside an occurrence of substr
-			for i := 0; i <= len(runes)-len(subRunes); i++ {
-				match := true
-				for j := 0; j < len(subRunes); j++ {
-					if runes[i+j] != subRunes[j] {
-						match = false
-						break
-					}
-				}
-				if match {
-					for j := 0; j < len(subRunes); j++ {
-						colored[i+j] = true
-					}
-				}
-			}
-		}
-
 		for row := 0; row < 8; row++ {
-			for i, char := range runes {
-				artRow := asciiMap[char][row]
-				if colored[i] {
-					fmt.Print(colorCode + artRow + reset)
-				} else {
-					fmt.Print(artRow)
+
+			for i, char := range line {
+				// fmt.Println(subIndex, i, line[i:])
+				if i == subIndex {
+					// color from colors map
+					result.WriteString(color)
+				}
+				result.WriteString(asciiMap[char][row])
+				if i == subIndex+len(subStr)-1 {
+					result.WriteString(reset)
+					fmt.Println("resetting color:", subIndex, i, line[i:])
+					subIndex = strings.Index(line[i:], subStr) + i
+					fmt.Println("after resetting color:", subIndex, i, line[i:])
 				}
 			}
-			fmt.Println()
+			subIndex = strings.Index(line, subStr)
+
+			result.WriteString("\n")
 		}
 	}
+	return result.String()
 }
