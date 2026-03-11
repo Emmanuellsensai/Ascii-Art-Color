@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"ascii-art/ascii"
+	"ascii-art-color/ascii"
 )
 
 // Test that all three banner files load without error

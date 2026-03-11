@@ -1,60 +1,73 @@
 package main
 
 import (
+	"ascii-art-color/ascii"
 	"fmt"
 	"os"
 	"strings"
-
-	"ascii-art/ascii"
 )
 
 func main() {
 
 	/*
-		Expected command format:
+		Valid usages:
 
-		go run . --color=<color> <substring> "<text>"
-
-		Example:
-		go run . --color=red kit "a king kitten have kit"
+		go run . --color=<color> "text"
+		go run . --color=<color> <substring> "text"
 	*/
 
-	// Program name + 3 arguments
-	if len(os.Args) != 4 {
+	if len(os.Args) != 3 && len(os.Args) != 4 {
+		fmt.Println("Usage: go run . [OPTION] [STRING]")
+		fmt.Println()
+		fmt.Println("EX: go run . --color=<color> <substring to be colored> \"something\"")
 		return
 	}
 
-	// First argument: --color=<color>
 	colorArg := os.Args[1]
 
-	// Second argument: substring to color
-	subStr := os.Args[2]
-
-	// Third argument: full text to convert to ASCII art
-	input := os.Args[3]
-
-	// Ensure the first argument starts with "--color="
 	if !strings.HasPrefix(colorArg, "--color=") {
+		fmt.Println("Usage: go run . [OPTION] [STRING]")
+		fmt.Println()
+		fmt.Println("EX: go run . --color=<color> <substring to be colored> \"something\"")
 		return
 	}
 
-	// Extract the color name from "--color=<color>"
-	color := strings.TrimPrefix(colorArg, "--color=")
+	// extract color name
+	colorArgs := strings.TrimPrefix(colorArg, "--color=")
 
-	// Read the banner file (ASCII template)
+	var subStr string
+	var input string
+
+	// case 1: no substring (color entire text)
+	if len(os.Args) == 3 {
+		input = os.Args[2]
+		subStr = ""
+	}
+
+	if colorArgs != "" {
+		if _, ok := ascii.Colors[colorArg]; !ok { 
+			fmt.Println("Usage: go run . [OPTION] [STRING]")
+			fmt.Println("EX: go run . --color=<color> <substring to be colored> \"something\"")
+			return
+		}
+	}
+
+	// case 2: substring provided
+	if len(os.Args) == 4 {
+		subStr = os.Args[2]
+		input = os.Args[3]
+	}
+
+	// read banner
 	bannerLines, err := ascii.ReadBanner("standard.txt")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	// Convert banner lines into a map:
-	// rune → [8 lines of ASCII art]
 	asciiMap := ascii.BuildAsciiMap(bannerLines)
 
-	// Generate ASCII output with coloring
-	result := ascii.PrintAscii(input, asciiMap, subStr, color)
+	result := ascii.PrintAscii(input, asciiMap, subStr, colorArgs)
 
-	// Print final ASCII art
 	fmt.Print(result)
 }
