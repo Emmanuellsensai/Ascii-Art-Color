@@ -44,14 +44,6 @@ func main() {
 		subStr = ""
 	}
 
-	if colorArgs != "" {
-		if _, ok := ascii.Colors[colorArg]; !ok { 
-			fmt.Println("Usage: go run . [OPTION] [STRING]")
-			fmt.Println("EX: go run . --color=<color> <substring to be colored> \"something\"")
-			return
-		}
-	}
-
 	// case 2: substring provided
 	if len(os.Args) == 4 {
 		subStr = os.Args[2]

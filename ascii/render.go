@@ -85,7 +85,7 @@ func PrintAscii(text string, asciiMap map[rune][]string, subStr, colorArg string
 					result.WriteString(colorCode)
 				}
 				result.WriteString(asciiMap[char][row])
-				if i == subIndex+len(subStr)-1 {
+				if i == subIndex+len(subStr)-1 || i == len(line) - 1 {
 					result.WriteString(reset)
 					// fmt.Println("resetting color:", subIndex, i, line[i:])
 					subIndex = strings.Index(line[i:], subStr) + i
