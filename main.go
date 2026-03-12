@@ -35,6 +35,13 @@ func main() {
 	// extract color name
 	colorArgs := strings.TrimPrefix(colorArg, "--color=")
 
+	// validate color exists in the Colors map
+	if _, ok := ascii.Colors[colorArgs]; !ok {
+		fmt.Printf("error: '%s' is not a supported color\n", colorArgs)
+		fmt.Println("Supported colors: black, red, green, yellow, blue, magenta, purple, cyan, white, orange")
+		return
+	}
+
 	var subStr string
 	var input string
 
