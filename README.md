@@ -1,4 +1,4 @@
-# ascii-art-color 🎨
+# ascii-art-color 
 
 A command-line tool written in Go that converts text into ASCII art and lets you color the entire output — or just specific words — using ANSI terminal colors.
 
