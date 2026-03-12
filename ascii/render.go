@@ -67,7 +67,6 @@ func PrintAscii(text string, asciiMap map[rune][]string, subStr, colorArg string
 	for i, line := range lines {
 
 		subIndex := strings.Index(line, subStr)
-		// fmt.Println("subIndex:", subIndex, line, len(line), len(subStr), 8 == subIndex+len(subStr))
 
 		if line == "" {
 			if i != 0 {
@@ -79,7 +78,6 @@ func PrintAscii(text string, asciiMap map[rune][]string, subStr, colorArg string
 		for row := 0; row < 8; row++ {
 
 			for i, char := range line {
-				// fmt.Println(subIndex, i, line[i:])
 				if i == subIndex {
 					// color from colors map
 					result.WriteString(colorCode)
@@ -87,9 +85,7 @@ func PrintAscii(text string, asciiMap map[rune][]string, subStr, colorArg string
 				result.WriteString(asciiMap[char][row])
 				if i == subIndex+len(subStr)-1 || i == len(line) - 1 {
 					result.WriteString(reset)
-					// fmt.Println("resetting color:", subIndex, i, line[i:])
 					subIndex = strings.Index(line[i:], subStr) + i
-					// fmt.Println("after resetting color:", subIndex, i, line[i:])
 				}
 			}
 			subIndex = strings.Index(line, subStr)
